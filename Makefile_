@@ -1,2 +1,5 @@
 all:
 	make standalone
+
+install:
+	make install

@@ -241,8 +241,8 @@ tryflag CFLAGS -fdata-sections
 tryldflag LDFLAGS_AUTO -Wl,--gc-sections
 
 # Try hardening flags
-#tryflag CFLAGS -fPIE
-#tryflag CFLAGS_AUTO -fstack-protector-all
+tryflag CFLAGS -fPIE
+tryflag CFLAGS_AUTO -fstack-protector-all
 tryldflag LDFLAGS -Wl,-z,now
 tryldflag LDFLAGS -Wl,-z,relro
 # in theory it should be perfectly fine to produce a staticically linked PIE
@@ -251,9 +251,9 @@ tryldflag LDFLAGS -Wl,-z,relro
 #  cc -fPIE -pie --static
 #
 # will always add a PT_INTERP referencing the dynamic loader/linker
-# if test "$static" != "yes" || tryldflag LDFLAGS_AUTO -Wl,--no-dynamic-linker ; then
-# 	tryldflag LDFLAGS_AUTO -pie
-# fi
+if test "$static" != "yes" || tryldflag LDFLAGS_AUTO -Wl,--no-dynamic-linker ; then
+	tryldflag LDFLAGS_AUTO -pie
+fi
 
 printf "creating config.mk... "
 
@@ -323,9 +323,7 @@ EOF
 		if test "$have_pkgconfig" = "yes" ; then
 			CFLAGS_CURSES=$(pkg-config --cflags $libcurses 2>/dev/null)
 			LDFLAGS_CURSES=$(pkg-config --libs $libcurses 2>/dev/null)
-			echo $CC  "$tmpc" $CFLAGS $CFLAGS_CURSES 
-			$CC  "$tmpc" $CFLAGS $CFLAGS_CURSES 
-			if test $? -eq 0 && $CC  "$tmpc" $CFLAGS $CFLAGS_CURSES \
+			if test $? -eq 0 && $CC $CFLAGS $CFLAGS_CURSES "$tmpc" \
 				$LDFLAGS $LDFLAGS_CURSES -o "$tmpo" >/dev/null 2>&1 ; then
 				CONFIG_CURSES=1
 				printf "yes\n"
@@ -353,33 +351,33 @@ fi
 
 # libtermkey is a mandatory dependency
 
-# printf "checking for libtermkey... "
-# cat > "$tmpc" <<EOF
-# #include <termkey.h>
-# 
-# int main(int argc, char *argv[]) {
-# 	TERMKEY_CHECK_VERSION;
-# 	return 0;
-# }
-# EOF
-# 
-# if test "$have_pkgconfig" = "yes" ; then
-# 	CFLAGS_TERMKEY=$(pkg-config --cflags termkey 2>/dev/null)
-# 	LDFLAGS_TERMKEY=$(pkg-config --libs termkey 2>/dev/null)
-# fi
-# 
-# if test -z "$LDFLAGS_TERMKEY"; then
-# 	CFLAGS_TERMKEY=""
-# 	LDFLAGS_TERMKEY="-ltermkey"
-# fi
-# 
-# if $CC  "$tmpc" $CFLAGS $CFLAGS_TERMKEY $LDFLAGS $LDFLAGS_TERMKEY $LDFLAGS_CURSES \
-# 	-o "$tmpo" >/dev/null 2>&1; then
-# 	printf "%s\n" "yes"
-# else
-# 	printf "%s\n" "no"
-# 	fail "$0: cannot find libtermkey"
-# fi
+printf "checking for libtermkey... "
+cat > "$tmpc" <<EOF
+#include <termkey.h>
+
+int main(int argc, char *argv[]) {
+	TERMKEY_CHECK_VERSION;
+	return 0;
+}
+EOF
+
+if test "$have_pkgconfig" = "yes" ; then
+	CFLAGS_TERMKEY=$(pkg-config --cflags termkey 2>/dev/null)
+	LDFLAGS_TERMKEY=$(pkg-config --libs termkey 2>/dev/null)
+fi
+
+if test -z "$LDFLAGS_TERMKEY"; then
+	CFLAGS_TERMKEY=""
+	LDFLAGS_TERMKEY="-ltermkey -lncursesw"
+fi
+
+if $CC $CFLAGS $CFLAGS_TERMKEY "$tmpc" $LDFLAGS $LDFLAGS_TERMKEY $LDFLAGS_CURSES \
+	-o "$tmpo" >/dev/null 2>&1; then
+	printf "%s\n" "yes"
+else
+	printf "%s\n" "no"
+	fail "$0: cannot find libtermkey"
+fi
 
 CONFIG_TRE=0
 REGEX_SRC=text-regex.c
@@ -412,7 +410,7 @@ EOF
 		LDFLAGS_TRE="-ltre"
 	fi
 
-	if $CC "$tmpc" $CFLAGS $CFLAGS_TRE  \
+	if $CC $CFLAGS $CFLAGS_TRE "$tmpc" \
 		$LDFLAGS $LDFLAGS_TRE -o "$tmpo" >/dev/null 2>&1; then
 		CONFIG_TRE=1
 		REGEX_SRC=text-regex-tre.c
@@ -458,7 +456,7 @@ EOF
 		if test "$have_pkgconfig" = "yes" ; then
 			CFLAGS_LUA=$(pkg-config --cflags $liblua 2>/dev/null)
 			LDFLAGS_LUA=$(pkg-config --libs $liblua 2>/dev/null)
-			if test $? -eq 0 && $CC  "$tmpc" $CFLAGS $CFLAGS_LUA \
+			if test $? -eq 0 && $CC $CFLAGS $CFLAGS_LUA "$tmpc" \
 				$LDFLAGS $LDFLAGS_LUA -o "$tmpo" >/dev/null 2>&1 ; then
 				CONFIG_LUA=1
 				printf "yes\n"
@@ -469,7 +467,7 @@ EOF
 		CFLAGS_LUA=""
 		LDFLAGS_LUA="-l$liblua -lm -ldl"
 
-		if $CC  "$tmpc" $CFLAGS $CFLAGS_LUA \
+		if $CC $CFLAGS $CFLAGS_LUA "$tmpc" \
 			$LDFLAGS $LDFLAGS_LUA -o "$tmpo" >/dev/null 2>&1 ; then
 			CONFIG_LUA=1
 			printf "yes\n"
@@ -516,7 +514,7 @@ EOF
 	CFLAGS_LPEG=""
 	LDFLAGS_LPEG="-llpeg"
 
-	if $CC  "$tmpc" $CFLAGS $CFLAGS_LUA $CFLAGS_LPEG \
+	if $CC $CFLAGS $CFLAGS_LUA $CFLAGS_LPEG "$tmpc" \
 		$LDFLAGS $LDFLAGS_LUA $LDFLAGS_LPEG -o "$tmpo" >/dev/null 2>&1 ; then
 		CONFIG_LPEG=1
 		printf "yes\n"
@@ -555,7 +553,7 @@ EOF
 		LDFLAGS_ACL="-lacl"
 	fi
 
-	if $CC  "$tmpc" $CFLAGS $CFLAGS_ACL \
+	if $CC $CFLAGS $CFLAGS_ACL "$tmpc" \
 		$LDFLAGS $LDFLAGS_ACL -o "$tmpo" >/dev/null 2>&1; then
 		CONFIG_ACL=1
 		printf "%s\n" "yes"

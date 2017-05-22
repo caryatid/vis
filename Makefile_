@@ -1,5 +1,5 @@
 all:
-	./configure CC="../../install/bin/musl-gcc -static -no-pie"  CFLAGS=" -ltermkey -lncursesw  -lterminfo -lunibilium" --static --prefix=$(PREFIX) --verbose
+	./configure CC="../../install/bin/musl-gcc -static -no-pie"  CFLAGS=" -ltermkey -lncursesw  -lterminfo -lunibilium" --static --prefix=$(PREFIX)
 	make
 
 install:

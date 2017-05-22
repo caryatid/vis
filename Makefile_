@@ -1,5 +1,5 @@
 all:
-	./configure LDFLAGS="-ltermkey -llpeg -lncursesw -lterminfo -lunibilium" --static --enable-lpeg-static --prefix=$(PREFIX)
+	./configure CFLAGS="-static -fPIE -fPIC" LDFLAGS="-ltermkey -llpeg -lncursesw -lterminfo -lunibilium" --static --enable-lpeg-static --prefix=$(PREFIX)
 	make
 
 install:

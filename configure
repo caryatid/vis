@@ -323,6 +323,8 @@ EOF
 		if test "$have_pkgconfig" = "yes" ; then
 			CFLAGS_CURSES=$(pkg-config --cflags $libcurses 2>/dev/null)
 			LDFLAGS_CURSES=$(pkg-config --libs $libcurses 2>/dev/null)
+			echo $CC $CFLAGS $CFLAGS_CURSES "$tmpc"
+			$CC $CFLAGS $CFLAGS_CURSES "$tmpc"
 			if test $? -eq 0 && $CC $CFLAGS $CFLAGS_CURSES "$tmpc" \
 				$LDFLAGS $LDFLAGS_CURSES -o "$tmpo" >/dev/null 2>&1 ; then
 				CONFIG_CURSES=1

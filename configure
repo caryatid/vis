@@ -252,7 +252,8 @@ tryldflag LDFLAGS -Wl,-z,relro
 #
 # will always add a PT_INTERP referencing the dynamic loader/linker
 if test "$static" != "yes" || tryldflag LDFLAGS_AUTO -Wl,--no-dynamic-linker ; then
-	tryldflag LDFLAGS_AUTO -pie
+	:
+	# tryldflag LDFLAGS_AUTO -pie
 fi
 
 printf "creating config.mk... "

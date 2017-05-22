@@ -251,9 +251,9 @@ tryldflag LDFLAGS -Wl,-z,relro
 #  cc -fPIE -pie --static
 #
 # will always add a PT_INTERP referencing the dynamic loader/linker
-if test "$static" != "yes" || tryldflag LDFLAGS_AUTO -Wl,--no-dynamic-linker ; then
-	tryldflag LDFLAGS_AUTO -pie
-fi
+# if test "$static" != "yes" || tryldflag LDFLAGS_AUTO -Wl,--no-dynamic-linker ; then
+# 	tryldflag LDFLAGS_AUTO -pie
+# fi
 
 printf "creating config.mk... "
 
@@ -323,10 +323,7 @@ EOF
 		if test "$have_pkgconfig" = "yes" ; then
 			CFLAGS_CURSES=$(pkg-config --cflags $libcurses 2>/dev/null)
 			LDFLAGS_CURSES=$(pkg-config --libs $libcurses 2>/dev/null)
-			echo $CC  "$tmpc" $CFLAGS $CFLAGS_CURSES 
-			$CC  "$tmpc" $CFLAGS $CFLAGS_CURSES 
-            exit
-			if test $? -eq 0 && $CC  $CFLAGS $CFLAGS_CURSES "$tmpc"\
+			if test $? -eq 0 && $CC  "$tmpc" $CFLAGS $CFLAGS_CURSES \
 				$LDFLAGS $LDFLAGS_CURSES -o "$tmpo" >/dev/null 2>&1 ; then
 				CONFIG_CURSES=1
 				printf "yes\n"

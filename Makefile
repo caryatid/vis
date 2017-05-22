@@ -64,7 +64,7 @@ config.mk:
 	@touch $@
 
 vis: config.h config.mk *.c *.h
-	${CC} ${CFLAGS} ${CFLAGS_VIS} ${CFLAGS_EXTRA} ${SRC} ${LDFLAGS} ${LDFLAGS_VIS} -o $@
+	${CC}  ${SRC} ${CFLAGS} ${CFLAGS_VIS} ${CFLAGS_EXTRA} ${LDFLAGS} ${LDFLAGS_VIS} -o $@
 
 vis-menu: vis-menu.c
 	${CC} ${CFLAGS} ${CFLAGS_AUTO} ${CFLAGS_STD} ${CFLAGS_EXTRA} $< ${LDFLAGS} ${LDFLAGS_STD} ${LDFLAGS_AUTO} -o $@

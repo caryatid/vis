@@ -1,5 +1,5 @@
 all:
-    ./configure CC="../../install/bin/musl-gcc -static -L../../include -no-pie" --prefix=$(PREFIX)
+	./configure CC="../../install/bin/musl-gcc -static -L../../include -no-pie" --prefix=$(PREFIX)
 	make
 
 install:
